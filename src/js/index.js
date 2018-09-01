@@ -2,6 +2,7 @@
 import Search from './models/Search';
 import * as searchView from './views/searchView';
 import {elements, renderLoader, clearLoader} from './views/base';
+import Recipe from './models/Recipe';
 /** Global state of the app
  *  Search object
  *  Current recipe object
@@ -11,7 +12,9 @@ import {elements, renderLoader, clearLoader} from './views/base';
 const state = {
 
 };
-
+/**
+  * SEARCH controller
+  */
 const controlSearch = async () => {
   // 1) Get query from view
   const query = searchView.getInput(); //TODO
@@ -25,13 +28,18 @@ const controlSearch = async () => {
     searchView.clearInput();
     searchView.clearResults();
 
-    // 4) search for recipes
-    await state.search.getResults();
+    try {
+      // 4) search for recipes
+      await state.search.getResults();
 
-    // 5) Render results on UI and cloear the loader
-    clearLoader();
-    searchView.renderResults(state.search.result);
-    console.log(state.search.result);
+      // 5) Render results on UI and cloear the loader
+      clearLoader();
+      searchView.renderResults(state.search.result);
+      console.log(state.search.result);
+    } catch (error) {
+      alert(error);
+      clearLoader();
+    }
   }
 }
 elements.searchForm.addEventListener('submit', (e) => {
@@ -47,3 +55,38 @@ elements.searchResPages.addEventListener('click', e => {
       searchView.renderResults(state.search.result, gotToPage);
     }
 });
+
+
+/**
+  * Recipe controller
+  */
+const controlRecipe = async () => {
+  // Get Id from URL
+
+  const idArr =  window.location.hash.split('.');
+  const id = idArr[1];
+
+  if (id) {
+    // prepare UI for changes
+
+    // Create new recipe object
+    state.recipe = new Recipe(id);
+
+    try {
+      // Get recippe dataset
+      await state.recipe.getRecipe();
+      state.recipe.parseIngredients();
+      console.log(state.recipe.ingredients);
+      // Calculate servings and timeout
+      state.recipe.calcTime();
+      state.recipe.calcServings();
+
+      // Render recipe
+    } catch (error) {
+      alert(error + ' Error processing recipes');
+    }
+  }
+};
+
+window.addEventListener('hashchange', controlRecipe);
+window.addEventListener('load', controlRecipe);
