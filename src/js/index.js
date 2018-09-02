@@ -2,9 +2,11 @@
 import Search from './models/Search';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
+import * as lsitView from './views/listView';
 import {elements, renderLoader, clearLoader} from './views/base';
 import Recipe from './models/Recipe';
 import List from './models/List';
+
 /** Global state of the app
  *  Search object
  *  Current recipe object
@@ -103,16 +105,51 @@ const controlRecipe = async () => {
 window.addEventListener('hashchange', controlRecipe);
 window.addEventListener('load', controlRecipe);
 
+// List controller
+
+const controllerList = () => {
+    if (!state.list) {
+      state.list = new List();
+    }
+
+    // Add each ingredient to the List and the UI
+      state.recipe.ingredients.forEach(el => {
+      const item = state.list.addItem(el.count, el.unit, el.ingredient);
+      listView.renderItem(item);
+    });
+};
+
+// Handle delte and update list item addEventListener
+elements.shopping.addEventListener('click', e => {
+    const id = e.target.closest('.shopping__item').dataset.itemid;
+
+
+    // Handle the delete button
+    if (e.target.matches('.shppping__delete, .shppping__delete *')) {
+        // Delete from state
+        state.list.deleteItem(id);
+
+
+        // Delte from UI
+        listView.deleteItem(id);
+
+        // Handle the update
+    } else if (e.target.matches('.shopping__count-value')) {
+        const val = parsoFloat(e.target.value, 10);
+        sate.list.updateCount(id, val);
+    }
+});
 
 // Event delegation, Handling recipe button clicks
-elements.recipe.addEventListener('click', e > {
+elements.recipe.addEventListener('click', e => {
   if (e.target.matchers('.btn-decrease, .btn-decrease *')) {
       if (state.recipe.servings > 1) {
           state.recipe.updateServings('dec');
           recipeView.updateServingIngredients(state.recipe);
       }
-  } else if (e.target.matchers('.btn-increase, .btn-increase *') {
+  } else if (e.target.matches('.btn-increase, .btn-increase *')) {
       state.recipe.updateServings('inc');
+  } else if (e.target.matches('.recipe__btn--add, .recipe__btn *')) {
+      controllerList();
   }
-
 });
