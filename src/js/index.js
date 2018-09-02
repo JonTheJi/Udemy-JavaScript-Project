@@ -101,3 +101,17 @@ const controlRecipe = async () => {
 
 window.addEventListener('hashchange', controlRecipe);
 window.addEventListener('load', controlRecipe);
+
+
+// Event delegation, Handling recipe button clicks
+elements.recipe.addEventListener('click', e > {
+  if (e.target.matchers('.btn-decrease, .btn-decrease *')) {
+      if (state.recipe.servings > 1) {
+          state.recipe.updateServings('dec');
+          recipeView.updateServingIngredients(state.recipe);
+      }
+  } else if (e.target.matchers('.btn-increase, .btn-increase *') {
+      state.recipe.updateServings('inc');
+  }
+
+});
