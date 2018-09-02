@@ -1,6 +1,7 @@
 // Global app controller
 import Search from './models/Search';
 import * as searchView from './views/searchView';
+import * as recipeView from './views/recipeView';
 import {elements, renderLoader, clearLoader} from './views/base';
 import Recipe from './models/Recipe';
 /** Global state of the app
@@ -17,8 +18,7 @@ const state = {
   */
 const controlSearch = async () => {
   // 1) Get query from view
-  const query = searchView.getInput(); //TODO
-  console.log(query);
+  const query = searchView.getInput();
   if (query !== '') {
     // 2) new Search object and add too state
     state.search = new Search(query);
@@ -33,11 +33,14 @@ const controlSearch = async () => {
       await state.search.getResults();
 
       // 5) Render results on UI and cloear the loader
-      clearLoader();
-      searchView.renderResults(state.search.result);
-      console.log(state.search.result);
+      if (state.search.result.length !== 0) {
+        clearLoader();
+        searchView.renderResults(state.search.result);
+      } else {
+        clearLoader();
+      }
     } catch (error) {
-      alert(error);
+      alert('wong input');
       clearLoader();
     }
   }
@@ -68,7 +71,8 @@ const controlRecipe = async () => {
 
   if (id) {
     // prepare UI for changes
-
+    recipeView.clearRecipe();
+    renderLoader(elements.recipe);
     // Create new recipe object
     state.recipe = new Recipe(id);
 
@@ -82,6 +86,8 @@ const controlRecipe = async () => {
       state.recipe.calcServings();
 
       // Render recipe
+      clearLoader();
+      recipeView.renderRecipe(state.recipe);
     } catch (error) {
       alert(error + ' Error processing recipes');
     }
