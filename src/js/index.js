@@ -66,14 +66,11 @@ elements.searchResPages.addEventListener('click', e => {
     }
 });
 
-
 /**
   * Recipe controller
   */
 
   //testing
-  state.likes = new Likes();
-
 
 const controlRecipe = async () => {
   // Get Id from URl
@@ -187,6 +184,20 @@ elements.shopping.addEventListener('click', e => {
         console.log(val);
         state.list.updateCount(id, val);
     }
+});
+
+// Restore liked recipes
+window.addEventListener('load', () => {
+  state.likes = new Likes();
+
+  // Restore likes
+  state.likes.readStorage();
+
+  // Toggle like menue button
+  likesView.toggleLikeMenu(state.likes.getNumLikes());
+
+  // Render the exsting likes
+  state.likes.likes.forEach(like => likesView.renderLike(like));
 });
 
 // Event delegation, Handling recipe button clicks
