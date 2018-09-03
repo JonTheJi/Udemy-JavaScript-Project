@@ -14,6 +14,7 @@ export default class Recipe {
         this.image = res.data.recipe.image_url;
         this.url = res.data.recipe.source_url;
         this.ingredients = res.data.recipe.ingredients;
+        console.log(this);
       } catch (error) {
         console.log(error);
         alert('Something went wrong :(');
